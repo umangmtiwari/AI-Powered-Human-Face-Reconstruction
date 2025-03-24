@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">  
+    <title>Regenerate</title>
+    <meta name="description" content="">
+    <meta name="author" content="templatemo">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,700' rel='stylesheet' type='text/css'>
+    <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/templatemo-style.css') }}" rel="stylesheet">
+
+    
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        /* Center the form and make it look more professional */
+.upload-form {
+  display:flexbox;
+  text-align: center;
+}
+
+.file-upload-label {
+  display: inline-block;
+  background-color: #007bff;
+  padding: 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: white;
+  font-size: 18px;
+  transition: background-color 0.3s ease;
+}
+
+.file-upload-label:hover {
+  background-color: #0056b3;
+}
+
+.file-upload-label i {
+  margin-right: 10px;
+}
+
+.file-input {
+  display: none;
+}
+
+.btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: #5CB85C;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #329632;
+}
+/* General Styles for Images */
+.processed-image {
+  width: 100%;
+  max-width: 500px;  /* Increased max-width for larger images */
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+/* Container for Images */
+.images-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-item {
+  text-align: center;
+  margin-bottom: 20px;  /* Space between images */
+}
+
+/* Row for Restored Images */
+.image-row {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.image-item {
+  width: 30%;
+  text-align: center;
+}
+
+/* Styling for Evaluation Table */
+.evaluation-table {
+  width: 100%;
+  margin-top: 30px;
+  border-collapse: collapse;
+}
+
+.evaluation-table th, .evaluation-table td {
+  padding: 12px 15px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.evaluation-table th {
+  background-color: #f8f9fa;
+  color: #333;
+  font-size: 18px;
+}
+
+.evaluation-table td {
+  font-size: 16px;
+}
+
+/* Add hover effect for rows in the table */
+.evaluation-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Style for the drag-and-drop upload container */
+.upload-container {
+  border: 2px dashed #5BC0DE;
+  border-radius: 10px;
+  padding: 60px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #f0eeee;
+  transition: background-color 0.3s ease;
+}
+
+.upload-container:hover {
+  background-color: #e4e4e4;
+}
+
+.upload-container p {
+  font-size: 16px;
+  color: #000000;
+}
+
+.upload-container.dragover {
+  background-color: #d1e7fd;
+}
+
+.upload-container.dragover p {
+  color: #309dbe;
+}
+
+
+
+
+    </style>
+  </head>
+  <body>  
+    <!-- Left column -->
+    <div class="templatemo-flex-row">
+      <div class="templatemo-sidebar">
+        <header class="templatemo-site-header">
+          <div class="square"></div>
+          <h1>Regenerate</h1>
+        </header>
+        <div class="profile-photo-container">
+            <img src="{{ url_for('static', filename='images/profile-photo.jpg') }}" alt="Profile Photo" class="img-responsive">
+          <div class="profile-photo-overlay"></div>
+        </div>      
+        <!-- Search box -->
+        <form class="templatemo-search-form" role="search">
+          <div class="input-group">
+              <button type="submit" class="fa fa-search"></button>
+              <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term">           
+          </div>
+        </form>
+        <div class="mobile-menu-icon">
+            <i class="fa fa-bars"></i>
+          </div>
+        <nav class="templatemo-left-nav">          
+          <ul>
+            <li><a href="{{ url_for('index') }}"><i class="fa fa-home fa-fw"></i>Dashboard</a></li>
+            <li><a href="{{ url_for('regenerate_image') }}" class="active"><i class="fa fa-database fa-fw"></i>Regenerate</a></li>
+            <li><a href="{{ url_for('ask_doubts') }}"><i class="fa fa-users fa-fw"></i>Ask Doubts</a></li>
+            <li><a href="{{ url_for('results') }}"><i class="fa fa-map-marker fa-fw"></i>Results</a></li>
+            <li><a href="{{ url_for('project_flow') }}"><i class="fa fa-sliders fa-fw"></i>Project Flow</a></li>
+            <li><a href="https://github.com/umangmtiwari" target="_blank"><i class="fa fa-eject fa-fw"></i>GitHub</a></li>
+          </ul>  
+        </nav>
+      </div>
+      <!-- Main content --> 
+      <div class="templatemo-content col-1 light-gray-bg">
+        <div class="templatemo-top-nav-container">
+          <div class="row">
+            <nav class="templatemo-top-nav col-lg-12 col-md-12">
+              <ul class="text-uppercase">
+                <li><a href="{{ url_for('index') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('regenerate_image') }}" class="active">Regenerate</a></li>
+                <li><a href="{{ url_for('ask_doubts') }}">Ask Doubts</a></li>
+                <li><a href="https://github.com/umangmtiwari" target="_blank">GitHub</a></li>
+              </ul>  
+            </nav> 
+          </div>
+        </div>
+        <div class="templatemo-content-container">         
+          <div class="templatemo-content-widget white-bg">
+            <div class="panel panel-default no-border">
+                <div class="panel-body text-center">
+                  <h2>Upload an Image to Process</h2>
+                  <br><br>
+                  <form action="/regenerate" method="POST" enctype="multipart/form-data" class="upload-form">
+                    <div class="upload-container" id="upload-container">
+                        <p>Drag and drop an image here or click to select one</p>
+                        <input type="file" name="image" id="image" accept="image/*" required class="file-input" style="display: none;">
+                    </div>
+                    <br><br>
+                    <button type="submit" class="btn btn-primary">Upload and Process</button>
+                </form>
+                <br><br>
+                                 
+              
+                  {% if damaged_image_url %}
+                  <div class="images-container">
+                    <div class="image-item">
+                      <h2>Damaged Image</h2><br>
+                      <img src="data:image/png;base64,{{ damaged_image_url }}" alt="Damaged Image" class="processed-image" />
+                    </div>
+                    
+                    <div class="image-row">
+                      <div class="image-item">
+                        <h2>Restored Image 1</h2><br>
+                        <img src="data:image/png;base64,{{ image1_url }}" alt="Restored Image 1" class="processed-image" />
+                      </div>
+                      <div class="image-item">
+                        <h2>Restored Image 2</h2><br>
+                        <img src="data:image/png;base64,{{ image2_url }}" alt="Restored Image 2" class="processed-image" />
+                      </div>
+                      <div class="image-item">
+                        <h2>Restored Image 3</h2><br>
+                        <img src="data:image/png;base64,{{ image3_url }}" alt="Restored Image 3" class="processed-image" />
+                      </div>
+                    </div>
+                  </div><br>
+              
+                  <h2>Evaluation Metrics</h2>
+                  <table class="evaluation-table">
+                    <thead>
+                      <tr>
+                        <th>Regeneration</th>
+                        <th>MSE</th>
+                        <th>PSNR</th>
+                        <th>SSIM</th>
+                        <th>L1 Loss</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Regeneration 1</td>
+                        <td>{{ eval_metrics_1[0] }}</td>
+                        <td>{{ eval_metrics_1[1] }}</td>
+                        <td>{{ eval_metrics_1[2] }}</td>
+                        <td>{{ eval_metrics_1[3] }}</td>
+                      </tr>
+                      <tr>
+                        <td>Regeneration 2</td>
+                        <td>{{ eval_metrics_2[0] }}</td>
+                        <td>{{ eval_metrics_2[1] }}</td>
+                        <td>{{ eval_metrics_2[2] }}</td>
+                        <td>{{ eval_metrics_2[3] }}</td>
+                      </tr>
+                      <tr>
+                        <td>Regeneration 3</td>
+                        <td>{{ eval_metrics_3[0] }}</td>
+                        <td>{{ eval_metrics_3[1] }}</td>
+                        <td>{{ eval_metrics_3[2] }}</td>
+                        <td>{{ eval_metrics_3[3] }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <br><br>
+                  <h3>Explanation of Evaluation Metrics:</h3>
+                  <br>
+                  <ul style="text-align: justify;">
+                    <li><strong>MSE (Mean Squared Error):</strong> In the context of regenerating damaged facial images, MSE quantifies the average squared difference between the pixel values of the original and reconstructed face. In facial regeneration tasks, a lower MSE indicates that the reconstructed facial features (such as eyes, nose, mouth) are closer to their true positions and appearances, leading to a more accurate restoration of the face.</li>
+                    <br>
+                    <li><strong>PSNR (Peak Signal-to-Noise Ratio):</strong> PSNR is a widely used metric in facial image regeneration to assess the quality of the reconstruction by comparing the maximum possible pixel value of the face image with the noise (or error) introduced during reconstruction. Higher PSNR values indicate fewer distortions in the reconstructed face, meaning that the restored facial details are more faithful to the original image.</li>
+                    <br>
+                    <li><strong>SSIM (Structural Similarity Index):</strong> SSIM plays a key role in facial regeneration as it evaluates the perceptual quality of the reconstructed face by considering factors like structural information, luminance, and texture. Since faces have intricate details that humans are sensitive to, SSIM helps ensure that the regenerated face not only matches the pixel values but also preserves key facial structures, such as symmetry and expression. Higher SSIM values indicate that the reconstructed face retains a natural and realistic appearance.</li>
+                    <br>
+                    <li><strong>L1 Loss:</strong> L1 Loss, or Mean Absolute Error (MAE), is often used in facial regeneration tasks because it focuses on minimizing the average absolute difference between the pixel values of the original and regenerated face. This metric is less sensitive to large differences compared to MSE, and thus it can help reduce visual artifacts in facial features. In facial regeneration, L1 Loss ensures that the overall face structure is restored more smoothly and naturally, without sharp, unrealistic transitions between the damaged and regenerated areas.</li>                    
+                  </ul>
+                  <br><br>
+              {% endif %}
+          
+              {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                      <ul>
+                          {% for message in messages %}
+                              <li>{{ message }}</li>
+                          {% endfor %}
+                      </ul>
+                  {% endif %}
+              {% endwith %}
+                </div>
+                
+
+              <div class="panel-heading border-radius-10">
+                <h2>Computational Resources</h2>
+              </div>
+              <div class="panel-body">
+                <div class="templatemo-flex-row flex-content-row margin-bottom-30">
+                  <div class="col-1">
+                    <div id="gauge_div" class="templatemo-chart"></div>         
+                  </div>              
+                </div>     
+              </div>
+            </div>            
+            <div class="panel panel-default no-border">
+              <div class="panel-heading border-radius-10">
+                <h2>Model Training and Deployment Schedule</h2>
+              </div>
+              <div class="panel-body">
+                <div class="templatemo-flex-row flex-content-row">
+                  <div class="col-1">
+                    <div id="timeline_div" class="templatemo-chart"></div>           
+                  </div>              
+                </div>
+              </div> 
+            </div>
+            <div class="panel panel-default no-border">
+              <div class="panel-heading border-radius-10">
+                <h2>Generative Model Performance</h2>
+              </div>
+              <div class="panel-body">
+                <div class="templatemo-flex-row flex-content-row">
+                  <div class="col-1">
+                    <div id="area_chart_div" class="templatemo-chart"></div>               
+                  </div>              
+                </div>
+              </div> 
+            </div>
+          </div>   
+        </div>
+      </div>
+    </div>
+    
+    <!-- JS -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-migrate-1.2.1.min.js') }}"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script>
+
+      var gaugeChart;
+      var gaugeData;
+      var gaugeOptions;
+      var timelineChart;
+      var timelineDataTable;
+      var timelineOptions;
+      var areaData;
+      var areaOptions;
+      var areaChart;
+
+      /* Gauage 
+      --------------------------------------------------*/
+      google.load("visualization", "1", {packages:["gauge"]});
+      google.setOnLoadCallback(drawGauge);
+      google.load("visualization", "1", {packages:["timeline"]});
+      google.setOnLoadCallback(drawTimeline);
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+
+      $(document).ready(function(){
+        if($.browser.mozilla) {
+          //refresh page on browser resize
+          // http://www.sitepoint.com/jquery-refresh-page-browser-resize/
+          $(window).bind('resize', function(e)
+          {
+            if (window.RT) clearTimeout(window.RT);
+            window.RT = setTimeout(function()
+            {
+              this.location.reload(false); /* false to get page from cache */
+            }, 200);
+          });      
+        } else {
+          $(window).resize(function(){
+            drawCharts();
+          });  
+        }   
+      });
+
+      function drawGauge() {
+
+        gaugeData = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['Memory', 80],
+          ['CPU', 55],
+          ['Network', 68]
+        ]);
+
+        gaugeOptions = {
+          redFrom: 90, redTo: 100,
+          yellowFrom:75, yellowTo: 90,
+          minorTicks: 5
+        };
+
+        gaugeChart = new google.visualization.Gauge(document.getElementById('gauge_div'));
+        gaugeChart.draw(gaugeData, gaugeOptions);
+
+        setInterval(function() {
+          gaugeData.setValue(0, 1, 40 + Math.round(60 * Math.random()));
+          gaugeChart.draw(gaugeData, gaugeOptions);
+        }, 13000);
+        setInterval(function() {
+          gaugeData.setValue(1, 1, 40 + Math.round(60 * Math.random()));
+          gaugeChart.draw(gaugeData, gaugeOptions);
+        }, 5000);
+        setInterval(function() {
+          gaugeData.setValue(2, 1, 60 + Math.round(20 * Math.random()));
+          gaugeChart.draw(gaugeData, gaugeOptions);
+        }, 26000);        
+      } // End function drawGauage
+
+      /* Timeline
+      --------------------------------------------------*/
+      function drawTimeline() {
+        var container = document.getElementById('timeline_div');
+        timelineChart = new google.visualization.Timeline(container);
+        timelineDataTable = new google.visualization.DataTable();
+        timelineDataTable.addColumn({ type: 'string', id: 'Room' });
+        timelineDataTable.addColumn({ type: 'string', id: 'Name' });
+        timelineDataTable.addColumn({ type: 'date', id: 'Start' });
+        timelineDataTable.addColumn({ type: 'date', id: 'End' });
+        timelineDataTable.addRows([
+    [ 'Room for Deep Learning',  'Generative AI Fundamentals',    new Date(0,0,0,12,0,0),  new Date(0,0,0,14,0,0) ],
+    [ 'Room for Deep Learning',  'Large Language Models (LLMs)',    new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+    [ 'Room for Deep Learning',  'Advanced Generative Models (e.g., GPT, BERT, etc.)', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
+    [ 'Generative Model Research Room', 'Reinforcement Learning for AI',   new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
+    [ 'Generative Model Research Room', 'Reinforcement Learning Techniques',       new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+    [ 'Generative Model Research Room', 'Applied Neural Network Training',        new Date(0,0,0,16,30,0), new Date(0,0,0,18,0,0) ],
+    [ 'Conversational AI Room',   'AI-Driven Data Visualization',       new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
+    [ 'Conversational AI Room',   'AI Model Fine-Tuning and Optimization',             new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+    [ 'Conversational AI Room',   'AI Deployment and Cloud-based AI Platforms',          new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]
+]);
+
+timelineOptions = {
+    timeline: { colorByRowLabel: true },
+    backgroundColor: '#ffd'
+};
+
+
+        timelineChart.draw(timelineDataTable, timelineOptions);
+      } // End function drawTimeline
+
+      /* Area Chart 
+      --------------------------------------------------*/
+      function drawChart() {
+        areaData = google.visualization.arrayToDataTable([
+        ['AI Model Evaluation Year', 'Model Training Performance', 'Computational Resources Used'],
+        ['2021',  150,      350],    // AI model performance at 85% accuracy, 350 computational units used
+        ['2022',  290,      420],    // AI model performance increases to 90% accuracy, slight increase in computational resources
+        ['2023',  392,      680],    // AI model performance jumps to 92%, but resources used increase significantly due to larger models
+        ['2024',  494,      800] 
+        ]);
+
+        areaOptions = {
+          title: 'AI Model Accuracy',
+          hAxis: {title: 'Year',  titleTextStyle: {color: '#333'}},
+          vAxis: {minValue: 0}
+        };
+
+        areaChart = new google.visualization.AreaChart(document.getElementById('area_chart_div'));
+        areaChart.draw(areaData, areaOptions);
+      } // End function drawChart
+
+      function drawCharts () {
+          gaugeChart.draw(gaugeData, gaugeOptions);
+          timelineChart.draw(timelineDataTable, timelineOptions);
+          areaChart.draw(areaData, areaOptions);
+      }
+
+      const uploadContainer = document.getElementById('upload-container');
+  const fileInput = document.getElementById('image');
+
+  // Handle the click event to trigger the file input dialog
+  uploadContainer.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  // Handle drag over event to change styles during drag
+  uploadContainer.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadContainer.classList.add('dragover');
+  });
+
+  // Handle drag leave event to revert styles after drag
+  uploadContainer.addEventListener('dragleave', () => {
+    uploadContainer.classList.remove('dragover');
+  });
+
+  // Handle drop event to process the file
+  uploadContainer.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadContainer.classList.remove('dragover');
+
+    // Get the dropped file and set it to the file input
+    const file = e.dataTransfer.files[0];
+    fileInput.files = e.dataTransfer.files;  // Set the files to the hidden input
+
+    // Update the text to show the selected file
+    if (file) {
+      uploadContainer.querySelector('p').textContent = `File selected: ${file.name}`;
+    }
+  });
+
+  // Listen for file input change to update the text when selecting file
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (file) {
+      uploadContainer.querySelector('p').textContent = `File selected: ${file.name}`;
+    }
+  });
+
+    </script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/templatemo-script.js') }}"></script>
+  </body>
+</html>

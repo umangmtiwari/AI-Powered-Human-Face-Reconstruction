@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI-Powered Human Face Reconstruction for Damaged Images</title>
+    <meta name="description" content="">
+    <meta name="author" content="YourName">
+    
+    <!-- External CSS Libraries -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,700' rel='stylesheet' type='text/css'>
+    <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/templatemo-style.css') }}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+
+    <style>
+      .flowchart-step {
+        background: #f9f9f9;
+        margin: 20px 0;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .flowchart-step:hover {
+        background-color: #e4e4e4;
+        transform: translateY(-5px);
+        box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .flowchart-step h4 {
+        color: #2c3e50;
+      }
+
+      .flowchart-step p {
+        color: #34495e;
+      }
+
+      #feedback {
+        background-color: #ecf0f1;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 30px;
+      }
+
+      .feedback-button {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s ease;
+      }
+
+      .feedback-button:hover {
+        background-color: #2980b9;
+      }
+      
+      /* Mobile responsive styles */
+      @media (max-width: 768px) {
+        .flowchart-step {
+          margin: 10px 0;
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="templatemo-flex-row">
+      <div class="templatemo-sidebar">
+        <header class="templatemo-site-header">
+          <div class="square"></div>
+          <h1>Project Flow</h1>
+        </header>
+        <div class="profile-photo-container">
+          <img src="{{ url_for('static', filename='images/profile-photo.jpg') }}" alt="Profile Photo" class="img-responsive">
+        </div>
+        <!-- Search box -->
+        <form class="templatemo-search-form" role="search">
+          <div class="input-group">
+              <button type="submit" class="fa fa-search"></button>
+              <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term">           
+          </div>
+        </form>
+        <nav class="templatemo-left-nav">
+          <ul>
+            <li><a href="{{ url_for('index') }}"><i class="fa fa-home fa-fw"></i>Dashboard</a></li>
+            <li><a href="{{ url_for('regenerate_image') }}"><i class="fa fa-database fa-fw"></i>Regenerate</a></li>
+            <li><a href="{{ url_for('ask_doubts') }}"><i class="fa fa-users fa-fw"></i>Ask Doubts</a></li>
+            <li><a href="{{ url_for('results') }}"><i class="fa fa-map-marker fa-fw"></i>Results</a></li>
+            <li><a href="{{ url_for('project_flow') }}" class="active"><i class="fa fa-sliders fa-fw"></i>Project Flow</a></li>
+            <li><a href="https://github.com/umangmtiwari" target="_blank"><i class="fa fa-eject fa-fw"></i>GitHub</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Main content -->
+      <div class="templatemo-content col-1 light-gray-bg">
+        <div class="templatemo-top-nav-container">
+          <div class="row">
+            <nav class="templatemo-top-nav col-lg-12 col-md-12">
+              <ul class="text-uppercase">
+                <li><a href="{{ url_for('index') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('regenerate_image') }}">Regenerate</a></li>
+                <li><a href="{{ url_for('ask_doubts') }}">Ask Doubts</a></li>
+                <li><a href="https://github.com/umangmtiwari" target="_blank">GitHub</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+        <div class="templatemo-content-container">
+          <div class="templatemo-content-widget white-bg">
+            <h2 class="margin-bottom-10">Project Flowchart</h2>
+            <p>This section illustrates the steps taken to build and train our project. Click each step below to explore details:</p>
+
+            <!-- Interactive Flowchart -->
+            <div id="flowchart">
+              <div class="flowchart-step animate__animated animate__fadeIn" onclick="showDetails(1)">
+                <h4>Step 1: Data Collection</h4>
+                <p>Data was gathered from various sources, such as databases and APIs, and processed to ensure quality.</p>
+              </div>
+
+              <div class="flowchart-step animate__animated animate__fadeIn" onclick="showDetails(2)">
+                <h4>Step 2: Data Exploration & Preprocessing</h4>
+                <p>We explored the data to detect patterns and cleaned it by removing missing or erroneous values.</p>
+              </div>
+
+              <div class="flowchart-step animate__animated animate__fadeIn" onclick="showDetails(3)">
+                <h4>Step 3: Model Selection</h4>
+                <p>Various models were tested, including decision trees and neural networks, to find the optimal approach.</p>
+              </div>
+
+              <div class="flowchart-step animate__animated animate__fadeIn" onclick="showDetails(4)">
+                <h4>Step 4: Model Training</h4>
+                <p>The best-performing model was trained with the preprocessed data to predict outcomes effectively.</p>
+              </div>
+
+              <div class="flowchart-step animate__animated animate__fadeIn" onclick="showDetails(5)">
+                <h4>Step 5: Model Evaluation</h4>
+                <p>We assessed the model using metrics like accuracy, precision, and recall to ensure its performance.</p>
+              </div>
+
+              <div class="flowchart-step animate__animated animate__fadeIn" onclick="showDetails(6)">
+                <h4>Step 6: Model Deployment</h4>
+                <p>The final model was deployed in a live environment, providing predictions in real-time.</p>
+              </div>
+
+              <div class="flowchart-step animate__animated animate__fadeIn" onclick="showDetails(7)">
+                <h4>Step 7: Monitoring & Maintenance</h4>
+                <p>Post-deployment, we continuously monitor the model's performance and update it as needed.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JS -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+      function showDetails(step) {
+        const descriptions = [
+          "Step 1: Data Collection - Data was gathered from various sources like databases, CSV files, and APIs.",
+          "Step 2: Data Exploration & Preprocessing - Cleaned the data by removing duplicates, handling missing values, and transforming it for modeling.",
+          "Step 3: Model Selection - Evaluated various models, including regression and machine learning models, and selected the best one based on performance.",
+          "Step 4: Model Training - Trained the selected model on the cleaned data and adjusted hyperparameters to optimize performance.",
+          "Step 5: Model Evaluation - Evaluated the model using precision, recall, F1 score, and cross-validation to test its robustness.",
+          "Step 6: Model Deployment - Deployed the model into a live system, providing real-time predictions.",
+          "Step 7: Monitoring & Maintenance - The system was monitored, and updates were made as necessary to improve accuracy."
+        ];
+
+        alert(descriptions[step - 1]);
+      }
+    </script>
+  </body>
+</html>

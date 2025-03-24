@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">  
+    <title>Ask Doubts</title>
+    <meta name="description" content="">
+    <meta name="author" content="templatemo">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,700' rel='stylesheet' type='text/css'>
+    <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/templatemo-style.css') }}" rel="stylesheet">
+    <style>
+      /* Basic styling for the chat window */
+      .chat-container {
+        width: 100%; /* Makes the container take up full width of its parent */
+        max-width: 1080px; /* Limits the maximum width to 1080px */
+        max-height: 700px;
+        min-height: 130px;
+        margin: 0 auto;
+        background: white;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
+
+
+      .messages {
+          flex-grow: 1;
+          max-height: 400px; /* Adjust the height of the messages container */
+          overflow-y: auto;
+          padding-bottom: 10px;
+          display: flex;
+          flex-direction: column; /* Ensures messages stack vertically */
+          gap: 10px; /* Adds spacing between messages */
+      }
+
+      .message {
+          padding: 10px;
+          background-color: #f1f1f1;
+          border-radius: 8px;
+          max-width: 80%;
+          word-wrap: break-word;
+      }
+
+      .user-message {
+          background-color: #d1ffd6;
+          text-align: right; /* Align user messages to the right */
+          margin-left: auto; /* Ensure the message is pushed to the right side */
+      }
+
+      .bot-message {
+          background-color: #e0e0e0;
+          text-align: left; /* Align bot messages to the left */
+          margin-right: auto; /* Ensure the message is pushed to the left side */
+      }
+
+      .input-container {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 10px;
+      }
+
+      input[type="text"] {
+          width: 80%;
+          padding: 8px;
+          border-radius: 5px;
+          border: 1px solid #ccc;
+      }
+
+      button {
+          width: 15%;
+          padding: 8px;
+          background-color: #4CAF50;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+      }
+
+      button:hover {
+          background-color: #45a049;
+      }
+
+      .typing {
+          font-style: italic;
+          color: gray;
+          text-align: left; /* Align typing indicator to the left */
+      }
+
+      .loading-dots {
+          display: inline-block;
+          animation: dots 1.5s infinite;
+      }
+
+      @keyframes dots {
+          0% {
+              content: "."; 
+          }
+          33% {
+              content: "..";
+          }
+          66% {
+              content: "...";
+          }
+          100% {
+              content: ".";
+          }
+      }
+  </style>
+  </head>
+  <body>  
+    <!-- Left column -->
+    <div class="templatemo-flex-row">
+      <div class="templatemo-sidebar">
+        <header class="templatemo-site-header">
+          <div class="square"></div>
+          <h1>Ask Doubts</h1>
+        </header>
+        <div class="profile-photo-container">
+          <img src="{{ url_for('static', filename='images/profile-photo.jpg') }}" alt="Profile Photo" class="img-responsive">
+          <div class="profile-photo-overlay"></div>
+        </div>      
+        <!-- Search box -->
+        <form class="templatemo-search-form" role="search">
+          <div class="input-group">
+              <button type="submit" class="fa fa-search"></button>
+              <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term">           
+          </div>
+        </form>
+        <div class="mobile-menu-icon">
+            <i class="fa fa-bars"></i>
+        </div>
+        <nav class="templatemo-left-nav">          
+          <ul>
+            <li><a href="{{ url_for('index') }}"><i class="fa fa-home fa-fw"></i>Dashboard</a></li>
+            <li><a href="{{ url_for('regenerate_image') }}"><i class="fa fa-database fa-fw"></i>Regenerate</a></li>
+            <li><a href="{{ url_for('ask_doubts') }}" class="active"><i class="fa fa-users fa-fw"></i>Ask Doubts</a></li>
+            <li><a href="{{ url_for('results') }}"><i class="fa fa-map-marker fa-fw"></i>Results</a></li>
+            <li><a href="{{ url_for('project_flow') }}"><i class="fa fa-sliders fa-fw"></i>Project Flow</a></li>
+            <li><a href="https://github.com/umangmtiwari" target="_blank"><i class="fa fa-eject fa-fw"></i>GitHub</a></li>
+          </ul>  
+        </nav>
+      </div>
+
+      <!-- Main content --> 
+      <div class="templatemo-content col-1 light-gray-bg">
+        <div class="templatemo-top-nav-container">
+          <div class="row">
+            <nav class="templatemo-top-nav col-lg-12 col-md-12">
+              <ul class="text-uppercase">
+                <li><a href="{{ url_for('index') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('regenerate_image') }}">Regenerate</a></li>
+                <li><a href="{{ url_for('ask_doubts') }}" class="active">Ask Doubts</a></li>
+                <li><a href="https://github.com/umangmtiwari" target="_blank">GitHub</a></li>
+              </ul>  
+            </nav> 
+          </div>
+        </div>
+        <br><br>
+        <!-- Chatbot Interface -->
+        <div class="chat-container">
+          <div class="messages" id="messages"></div>
+          <div class="input-container">
+              <input type="text" id="userInput" placeholder="Ask me something..." />
+              <button id="sendBtn">Send</button>
+          </div>
+      </div>
+
+        <div class="templatemo-content-container">
+          <div class="templatemo-content-widget no-padding">
+          
+            <div class="col-1">              
+              <div class="templatemo-content-widget pink-bg">
+                <i class="fa fa-times"></i>                
+                <h2 class="text-uppercase margin-bottom-10">Chatbot Model: Claude 3.5</h2>
+                <p class="margin-bottom-0">The latest version of our chatbot is powered by <strong>Claude 3.5</strong>, an advanced conversational AI model by Anthropic. This model is designed to provide intelligent, human-like responses, making it ideal for handling complex queries, casual conversations, and more. Some key features include:</p>                  
+                <ul>
+                  <p></p>
+                  <p>Improved response accuracy and context understanding</p>
+                  <p>Handles a wide range of topics, from technical to casual</p>
+                  <p>Natural language processing with enhanced conversational flow</p>
+                  <p>Quick response times for real-time communication</p>
+                </ul>
+              </div>            
+              <div class="templatemo-content-widget blue-bg">
+                <i class="fa fa-times"></i>
+                <h2 class="text-uppercase margin-bottom-10">What Claude 3.5 Can Do</h2>
+                <p class="margin-bottom-0">The chatbot, powered by <strong>Claude 3.5</strong>, can perform a wide variety of tasks to help users in different areas. Below are some of the key capabilities:</p>                
+                <ul>
+                  <p></p>
+                  <p><strong>Answering Questions:</strong> Get accurate answers to a wide range of questions, from technical details to general knowledge.</p>
+                  <p><strong>Text Generation:</strong> Generate high-quality content for blogs, articles, social media posts, and more.</p>
+                  <p><strong>Summarizing Text:</strong> Condense long articles, research papers, or documents into short, digestible summaries.</p>
+                  <p><strong>Code Assistance:</strong> Provide help with coding problems, debug code, or even write code snippets based on user input.</p>
+                  <p><strong>Translation:</strong> Translate text between different languages accurately, helping users communicate across language barriers.</p>
+                  <p><strong>Personalized Recommendations:</strong> Offer personalized advice based on user input, such as book recommendations, travel destinations, or movie suggestions.</p>
+                  <p><strong>Productivity Tasks:</strong> Assist with tasks like setting reminders, creating to-do lists, or scheduling events.</p>
+                  <p><strong>Conversational Agent:</strong> Engage in meaningful, human-like conversations on a wide range of topics, whether for fun or to provide advice.</p>
+                  <p><strong>Simulated Scenarios:</strong> Simulate realistic scenarios for training, education, or entertainment purposes (e.g., language practice or role-playing).</p>
+                  <p><strong>Creative Writing:</strong> Help with creative writing tasks like generating story ideas, character development, and even writing full stories.</p>
+                </ul>
+              </div>            
+            </div>                       
+          </div> 
+        </div>
+      </div>
+    </div>
+    
+    <!-- JS -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-migrate-1.2.1.min.js') }}"></script>
+
+    <!-- Chatbot JS Logic -->
+    <script>
+      $(document).ready(function(){
+        $('#send-btn').click(function(){
+          var userInput = $('#user-input').val();
+          if(userInput.trim() !== "") {
+            var messageHtml = '<div class="chatbot-message user"><p>' + userInput + '</p></div>';
+            $('#chatbot-content').append(messageHtml);
+            $('#user-input').val('');
+
+            // Here, send the userInput to the backend (API request to Anthropic Claude 3.5)
+            // For demonstration, we will simulate the response with a hardcoded message
+            var botResponse = "This is a simulated response. In a real app, this would be from the API.";
+
+            // Append the bot's response
+            var botMessageHtml = '<div class="chatbot-message bot"><p>' + botResponse + '</p></div>';
+            $('#chatbot-content').append(botMessageHtml);
+            $('#chatbot-content').scrollTop($('#chatbot-content')[0].scrollHeight);  // Auto scroll to the latest message
+          }
+        });
+      });
+
+      const sendBtn = document.getElementById("sendBtn");
+        const userInput = document.getElementById("userInput");
+        const messagesContainer = document.getElementById("messages");
+
+        sendBtn.addEventListener("click", async () => {
+            const userMessage = userInput.value;
+            if (!userMessage.trim()) return;  // Don't send empty messages
+
+            // Display user's message in chat (aligns to the right)
+            displayMessage(userMessage, "user-message");
+
+            // Show "typing..." message (3 dots) on the left
+            displayTypingIndicator();
+
+            // Send the message to the backend API
+            const response = await sendMessage(userMessage);
+            
+            // Remove typing indicator and display the bot's response (aligns to the left)
+            removeTypingIndicator();
+            displayMessage(response, "bot-message");
+
+            // Clear the input field after sending the message
+            userInput.value = '';
+        });
+
+        async function sendMessage(question) {
+            try {
+                // Send the user input to the backend (Flask API)
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: question })
+                });
+
+                const data = await response.json();
+
+                if (data.task_id) {
+                    // Wait for the response using task ID
+                    return await getResult(data.task_id);
+                } else {
+                    return "Error: Unable to process your request.";
+                }
+            } catch (error) {
+                console.error("Error sending message:", error);
+                return "Sorry, there was an error with your request.";
+            }
+        }
+
+        async function getResult(task_id) {
+            try {
+                let result = null;
+                while (!result) {
+                    const response = await fetch(`/result/${task_id}`);
+                    const data = await response.json();
+                    if (data.status === "completed") {
+                        result = data.result;
+                    }
+                }
+                return result;
+            } catch (error) {
+                console.error("Error fetching result:", error);
+                return "Sorry, I couldn't get an answer. Please try again.";
+            }
+        }
+
+        function displayMessage(message, className) {
+            const msgDiv = document.createElement("div");
+            msgDiv.classList.add("message", className);
+            msgDiv.textContent = message;
+            messagesContainer.appendChild(msgDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;  // Auto-scroll to the bottom
+        }
+
+        function displayTypingIndicator() {
+            const typingDiv = document.createElement("div");
+            typingDiv.classList.add("message", "typing");
+            typingDiv.id = "typingIndicator";
+            typingDiv.innerHTML = "Generating Response" + "<span class='loading-dots'>.</span>";
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById("typingIndicator");
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+    </script>
+  </body>
+</html>
