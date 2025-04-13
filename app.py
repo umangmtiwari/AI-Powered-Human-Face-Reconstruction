@@ -30,7 +30,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Bedrock Client for Claude
-bedrock = boto3.client(service_name="bedrock-runtime")
+bedrock = boto3.client(
+    service_name="bedrock-runtime",
+    region_name="us-east-1"
+)
+
 
 # In-memory task store to manage tasks
 tasks = {}
