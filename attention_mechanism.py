@@ -8,7 +8,7 @@ from PIL import Image
 from skimage.metrics import structural_similarity as ssim
 import torch.nn.functional as F
 
-device = torch.device('cuda')
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Define transformations
 transform = transforms.Compose([
@@ -84,11 +84,6 @@ criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 scaler = torch.cuda.amp.GradScaler()  # Enable mixed precision training
 
-test_image_path = "C:/Users/umang/Downloads/data/celeba/img_align_celeba/013019.jpg"
-test_image = Image.open(test_image_path)
-# Apply the transformations to the loaded image
-test_image = transform(test_image)
-
 def regenerate3(test_image):
     # Load the model for testing
     model_path = "autoencoder_attention_10K_images.pth"
@@ -122,7 +117,3 @@ def regenerate3(test_image):
     # Ensure values are in [0, 1] range
     restored_image3 = np.clip(restored_image3, 0, 1)
     return restored_image3, evaluation_metrices_3
-
-
-#usage:
-regenerate3(test_image)

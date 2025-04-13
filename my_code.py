@@ -15,8 +15,6 @@ transform = transforms.Compose([
     transforms.ToTensor()
 ])
 
-# Path to manually downloaded CelebA images
-celeba_path = "C:/Users/umang/Downloads/data/CelebA/img_align_celeba"
 
 # Custom Dataset class to load images without requiring class folders
 class CelebADataset(Dataset):
@@ -36,15 +34,6 @@ class CelebADataset(Dataset):
             image = self.transform(image)
         
         return image  # No labels, since CelebA does not have direct class folders
-device = torch.device('cuda')
-# Load dataset
-dataset = CelebADataset(celeba_path, transform=transform)
-dataloader = DataLoader(dataset, batch_size=16, shuffle=True)
-
-# Display a sample image
-sample_img = dataset[56]
-
-
 
 # Function to create masked (damaged) images by adding black occlusions
 def damage_image(image, mask_size=32):
@@ -54,10 +43,6 @@ def damage_image(image, mask_size=32):
     y = np.random.randint(0, h - mask_size)
     damaged[:, y:y+mask_size, x:x+mask_size] = 0  # Black patch
     return damaged
-
-# Display a sample damaged image
-damaged_img = damage_image(sample_img)
-
 
 # Define an Autoencoder Model for Image Restoration
 class Autoencoder(nn.Module):
@@ -88,7 +73,7 @@ class Autoencoder(nn.Module):
 
 # Initialize the model
 model = Autoencoder()
-device = torch.device('cuda')
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
 # Define loss function and optimizer
@@ -106,12 +91,6 @@ model = Autoencoder().to(device)
 state_dict = torch.load("face_regeneration.pth", map_location=device)
 model.load_state_dict(state_dict)
 model.eval()  # Set model to evaluation mode
-
-
-test_image_path = "C:/Users/umang/Downloads/data/celeba/img_align_celeba/013019.jpg"
-test_image = Image.open(test_image_path)
-# Apply the transformations to the loaded image
-test_image = transform(test_image)
 
 # Function to regenerate the image from the damaged image
 # Function to regenerate the image from the damaged image
@@ -176,8 +155,3 @@ def regenerate2(test_image):
 
     evaluation_metrices_2 = [mse_loss,psnr_value,ssim_value,l1_loss]
     return restored_image2, evaluation_metrices_2
-
-#usage:
-
-regenerate1(test_image)
-regenerate2(test_image)

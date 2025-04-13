@@ -12,6 +12,7 @@ from flask import Flask, request, jsonify, render_template
 from langchain.llms.bedrock import Bedrock
 from threading import Thread
 import logging
+import os
 
 app = Flask(__name__)
 
@@ -227,4 +228,4 @@ def get_result(task_id):
     return jsonify(task)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
