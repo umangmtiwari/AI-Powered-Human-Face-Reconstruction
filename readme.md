@@ -37,7 +37,7 @@ This project aims to reconstruct facial images suffering from occlusions or dist
 ## 💻 Installation & Setup
 
 1. **Clone the Repository**
-   git clone https://github.com/your-username/face-reconstruction.git
+   git clone https://github.com/umangmtiwari/AI-Powered-Human-Face-Reconstruction.git
    cd face-reconstruction
 
 2. **Create and Activate Virtual Environment**
@@ -62,7 +62,19 @@ This project aims to reconstruct facial images suffering from occlusions or dist
 
    python mobile.py
 
-## 📷 Demo Screenshots
+## 📷 Screenshots
+
+![image](https://github.com/user-attachments/assets/2b753e30-b52b-4585-b2fd-410153bf6a0e)
+
+![image](https://github.com/user-attachments/assets/48d9730c-4c5a-44c4-9ec2-a4fe1e3abf74)
+
+![image](https://github.com/user-attachments/assets/265772ab-094a-420d-a9ab-2210f38afc06)
+
+![image](https://github.com/user-attachments/assets/56931bed-56b3-4d8b-b8a4-930f2ce2d170)
+
+![image](https://github.com/user-attachments/assets/d188254c-7057-4b9e-9312-ddf260e9ab5d)
+
+![image](https://github.com/user-attachments/assets/05c2731f-712f-4bca-a59c-c3786151deda)
 
 
 ## 🤖 Telegram Bot Features
