@@ -37,23 +37,17 @@ This project aims to reconstruct facial images suffering from occlusions or dist
 ## 💻 Installation & Setup
 
 1. **Clone the Repository**
-   ```bash
    git clone https://github.com/your-username/face-reconstruction.git
    cd face-reconstruction
-````
 
 2. **Create and Activate Virtual Environment**
 
-   ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
 
 3. **Install Dependencies**
 
-   ```bash
    pip install -r requirements.txt
-   ```
 
 4. **Download the Dataset**
 
@@ -62,21 +56,14 @@ This project aims to reconstruct facial images suffering from occlusions or dist
 
 5. **Run Flask App**
 
-   ```bash
    python app.py
-   ```
 
 6. **Run Telegram Bot**
 
-   ```bash
    python mobile.py
-   ```
 
 ## 📷 Demo Screenshots
 
-| Example 1                        | Example 2                      |
-| -------------------------------- | ---------------------------------- |
-| ![Damaged](./static/images/3.png) | ![Restored](./static/images/5.png) |
 
 ## 🤖 Telegram Bot Features
 
