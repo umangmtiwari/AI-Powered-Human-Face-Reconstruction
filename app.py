@@ -13,6 +13,8 @@ from langchain.llms.bedrock import Bedrock
 from threading import Thread
 import logging
 import os
+import csv 
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -45,15 +47,40 @@ def get_claude_llm():
     return llm
 
 # Define the new doctor-like prompt template for Claude
-prompt_template = """
-Human: As a virtual doctor, please answer the following question with empathy, professionalism, and expertise. Offer personalized advice and explain things clearly.
-Question: {question}
-Assistant:
-"""
+prompt_template = """Human: The following are the latest evaluation scores from three image regeneration methods. Please explain what these metrics mean, compare the methods, and tell which method performed best.
+        
+Scores:
+{metrics_str}
+
+Assistant:"""
 
 # Function to check allowed file extensions
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+def get_latest_metrics(csv_file_path='regenerated_image_metrics.csv'):
+    if not os.path.exists(csv_file_path):
+        return None
+
+    with open(csv_file_path, 'r') as file:
+        reader = list(csv.reader(file))
+        headers = reader[0]
+        rows = reader[1:]
+
+    # Group rows by timestamp
+    from collections import defaultdict
+    grouped = defaultdict(list)
+    for row in rows:
+        grouped[row[0]].append(row)
+
+    if not grouped:
+        return None
+
+    latest_timestamp = sorted(grouped.keys())[-1]
+    latest_rows = grouped[latest_timestamp]
+
+    return headers, latest_rows
+
 
 # Function to damage the image by adding a black occlusion (similar to the one in my_code.py)
 def damage_image(image, mask_size=32):
@@ -89,6 +116,8 @@ def regenerate_image():
 
             # Damage the image once and pass it to both regeneration functions
             damaged_image = damage_image(test_image)  # Apply the damage to the image
+            #damaged_image = test_image  # Don't apply damage, use the image directly
+
 
             # Regenerate the images using the functions
             restored_image_1, evaluation_metrics_1 = regenerate1(damaged_image)
@@ -128,6 +157,31 @@ def regenerate_image():
             formatted_eval_metrics_1 = [f"{metric:.4f}" for metric in evaluation_metrics_1]
             formatted_eval_metrics_2 = [f"{metric:.4f}" for metric in evaluation_metrics_2]
             formatted_eval_metrics_3 = [f"{metric:.4f}" for metric in evaluation_metrics_3]
+            
+            # Prepare data for CSV
+            csv_file_path = 'regenerated_image_metrics.csv'
+            headers = ['Timestamp', 'Method', 'MSE', 'PSNR', 'SSIM', 'L1 Loss']
+
+            # Get current timestamp
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            # List of all rows to write
+            csv_rows = [
+                [timestamp, 'Regenerate1'] + evaluation_metrics_1,
+                [timestamp, 'Regenerate2'] + evaluation_metrics_2,
+                [timestamp, 'Regenerate3'] + evaluation_metrics_3
+            ]
+
+            # Check if CSV file exists
+            file_exists = os.path.isfile(csv_file_path)
+
+            # Append to CSV
+            with open(csv_file_path, mode='a', newline='') as file:
+                writer = csv.writer(file)
+                if not file_exists:
+                    writer.writerow(headers)  # Write header only once
+                writer.writerows(csv_rows)
+
 
             # Return everything to the same template
             return render_template(
@@ -166,6 +220,26 @@ def ask_doubts():
 
 # Function to generate the prompt
 def generate_prompt(question):
+    # Check if the question asks about metrics
+    if "score" in question.lower() or "metric" in question.lower():
+        headers, rows = get_latest_metrics()
+        if not rows:
+            return "Human: There is no score data available.\nAssistant:"
+
+        # Build a readable string of the latest scores
+        metrics_str = "\n".join(
+            f"{row[1]} - MSE: {row[2]}, PSNR: {row[3]}, SSIM: {row[4]}, L1 Loss: {row[5]}"
+            for row in rows
+        )
+
+        return f"""Human: The following are the latest evaluation scores from three image regeneration methods. Please explain what these metrics mean, compare the methods, and tell which method performed best.
+        
+Scores:
+{metrics_str}
+
+Assistant:"""
+
+    # Default fallback for normal questions
     return prompt_template.format(question=question)
 
 
